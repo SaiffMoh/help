@@ -39,7 +39,7 @@ def build_input_extraction_prompt(state: TravelSearchState):
         CABIN CLASS PARSING:
         - "eco" → "economy", "biz" → "business", "first" → "first class"
 
-        REQUIRED INFORMATION:
+        REQUIRED INFORMATION (ALL of these are required before we proceed):
         1. departure_date (YYYY-MM-DD format)
         2. origin (city name)
         3. destination (city name) 
@@ -67,8 +67,8 @@ def build_input_extraction_prompt(state: TravelSearchState):
         }}
 
         RULES:
-        - If and only if departure_date, origin, and destination are all present → set info_complete=true and needs_followup=false and followup_question=null.
-        - Otherwise → set info_complete=false and needs_followup=true and set followup_question to a single, direct missing question (e.g., "Which city are you flying from?").
+        - If and only if all five fields (departure_date, origin, destination, duration, cabin_class) are present → set info_complete=true and needs_followup=false and followup_question=null.
+        - Otherwise → set info_complete=false and needs_followup=true and set followup_question to a single, direct missing question (prefer asking for duration first, then cabin class, then date, then origin, then destination).
         - Update as many fields as the user provides in the latest message.
         - Output ONLY valid json.
 
@@ -76,6 +76,7 @@ def build_input_extraction_prompt(state: TravelSearchState):
         - User: "I want to fly to Paris on august 20th" → {{"departure_date": "2025-08-20", "destination": "Paris", "followup_question": "Which city are you flying from?", "needs_followup": true, "info_complete": false}}
         - User: "from NYC, eco class" → {{"origin": "New York", "cabin_class": "economy", "followup_question": "Which city would you like to fly to?", "needs_followup": true, "info_complete": false}}
         - User: "5 days" → {{"duration": 5, "followup_question": "What date would you like to depart?", "needs_followup": true, "info_complete": false}}
+        - User: "duration 6 days, business" → {{"duration": 6, "cabin_class": "business", "followup_question": null, "needs_followup": false, "info_complete": false}}
 
         BE SMART: If user provides multiple pieces of info at once, extract all of them. Ask natural, single, conversational follow-up.
     """

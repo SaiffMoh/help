@@ -27,29 +27,35 @@ def analyze_conversation_node(state: TravelSearchState) -> TravelSearchState:
     if not state.get("destination"):
         missing_fields.append("destination")
 
-    # Cabin class is optional for search; normalize step will default to ECONOMY if missing
-    # Duration is optional; if missing we will search one-way or set return via duration if present
-    
-    # Decide completion
-    core_complete = all(field not in missing_fields for field in ["departure_date", "origin", "destination"])
+    # Duration and cabin_class are required to proceed to packages flow
+    if state.get("duration") is None:
+        missing_fields.append("duration")
+    if not state.get("cabin_class"):
+        missing_fields.append("cabin_class")
+
+    # Decide completion: require all 5 fields
+    required_fields = ["departure_date", "origin", "destination", "duration", "cabin_class"]
+    core_complete = all(field not in missing_fields for field in required_fields)
 
     if not core_complete:
         state["info_complete"] = False
         state["needs_followup"] = True
 
-        # Generate a specific follow-up question if the LLM didn't provide one
+        # Generate a single, specific follow-up question if not already provided by LLM
         if not state.get("followup_question"):
-            questions = []
-            if "origin" in missing_fields and "destination" in missing_fields and "departure_date" in missing_fields:
-                questions.append("What city are you flying from, where are you going, and on what date?")
-            else:
-                if "origin" in missing_fields:
-                    questions.append("Which city are you flying from?")
-                if "destination" in missing_fields:
-                    questions.append("Which city would you like to fly to?")
-                if "departure_date" in missing_fields:
-                    questions.append("What is your departure date? (YYYY-MM-DD)")
-            state["followup_question"] = " ".join(questions) or "Could you share your origin, destination, and departure date?"
+            question = None
+            if "origin" in missing_fields:
+                question = "Which city are you flying from?"
+            elif "destination" in missing_fields:
+                question = "Which city would you like to fly to?"
+            elif "departure_date" in missing_fields:
+                question = "What is your departure date? (YYYY-MM-DD)"
+            elif "duration" in missing_fields:
+                question = "How many days will you stay (trip duration)?"
+            elif "cabin_class" in missing_fields:
+                question = "Which cabin class do you prefer (economy, business, or first)?"
+
+            state["followup_question"] = question or "Could you share your origin, destination, departure date, duration (days), and preferred cabin class?"
     else:
         state["info_complete"] = True
         state["needs_followup"] = False
