@@ -110,7 +110,8 @@ async def chat_endpoint(request: ChatRequest):
             "duration": None,
             "followup_question": None,
             "current_node": "llm_conversation",
-            "followup_count": 0
+            "followup_count": 0,
+            "request_type": "flights"
         }
 
         if graph is None:

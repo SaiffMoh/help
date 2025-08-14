@@ -28,12 +28,15 @@ def llm_conversation_node(state: TravelSearchState) -> TravelSearchState:
                 state["destination"] = llm_result["destination"]
             if llm_result.get("cabin_class"):
                 state["cabin_class"] = llm_result["cabin_class"]
-            if llm_result.get("duration"):
+            if llm_result.get("duration") is not None:
                 state["duration"] = llm_result["duration"]
 
+            # Capture follow-up suggestion but don't force flags here; analyze node decides
             state["followup_question"] = llm_result.get("followup_question")
-            state["needs_followup"] = llm_result.get("needs_followup", True)
-            state["info_complete"] = llm_result.get("info_complete", False)
+
+            # If LLM believes it's complete, keep a hint
+            if llm_result.get("info_complete"):
+                state["request_type"] = state.get("request_type") or "flights"
 
         except json.JSONDecodeError:
             print(f"LLM response parsing error. Raw response: {response.content}")

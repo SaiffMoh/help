@@ -15,7 +15,7 @@ def check_info_complete(state: TravelSearchState) -> str:
         pass
 
     if state.get("info_complete", False):
-        req_type = state.get("request_type")
+        req_type = state.get("request_type") or "flights"
         if req_type == "flights":
             return "flights"
         elif req_type == "hotels":
