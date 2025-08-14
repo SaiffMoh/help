@@ -1,4 +1,4 @@
-from Models import TravelSearchState
+from Models.TravelSearchState import TravelSearchState
 import requests
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed

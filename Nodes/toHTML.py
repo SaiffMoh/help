@@ -27,10 +27,15 @@ def toHTML(state: TravelSearchState) -> TravelSearchState:
 
     # Render packages to HTML string list
     travel_packages = state.get("travel_packages", [])
+    try:
+        print(f"toHTML: received {len(travel_packages)} packages")
+    except Exception as _:
+        print("toHTML: unable to determine package count")
     html_packages = [
         dict_to_table(pkg) if isinstance(pkg, dict) else html.escape(str(pkg))
         for pkg in travel_packages
     ]
+    print(f"toHTML: built {len(html_packages)} html snippets")
 
     # Attach HTML to state and continue
     state["travel_packages_html"] = html_packages

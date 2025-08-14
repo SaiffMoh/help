@@ -16,7 +16,9 @@ def llm_conversation_node(state: TravelSearchState) -> TravelSearchState:
             return state
 
         llm_prompt = build_input_extraction_prompt(state)
+        print("llm_conversation_node: using JSON-mode LLM (response_format=json_object)")
         response = get_llm_json().invoke([HumanMessage(content=llm_prompt)])
+        print(f"llm_conversation_node: got response length={len(response.content) if hasattr(response, 'content') else 'n/a'}")
 
         try:
             llm_result = json.loads(response.content)
