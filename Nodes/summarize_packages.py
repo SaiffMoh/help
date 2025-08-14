@@ -1,17 +1,18 @@
 from Models import TravelSearchState
-from Utils.getLLM import get_llm
+from Utils.getLLM import get_text_llm
 from Prompts.summary_prompt import summary_prompt
 from langchain.schema import HumanMessage
 
+
 def summarize_packages(state: TravelSearchState) -> TravelSearchState:
     """Generate LLM summary and recommendation for travel packages."""
-
 
     # Get the 3 travel packages
     travel_packages = state.get("travel_packages", [])
     
     if not travel_packages or len(travel_packages) == 0:
         state["package_summary"] = "No travel packages found for your search. Please try different dates or destinations."
+        state["summary"] = state["package_summary"]
         return state
     
     # Ensure we have 3 packages (pad with None if needed)
@@ -22,15 +23,17 @@ def summarize_packages(state: TravelSearchState) -> TravelSearchState:
     # Handle cases where we have fewer than 3 packages
     if not package1:
         state["package_summary"] = "No valid travel packages could be created. Please check your search criteria."
+        state["summary"] = state["package_summary"]
         return state
     
     try:
         # Generate the prompt with the 3 packages
         llm_prompt = summary_prompt(package1, package2, package3)
         
-        # Use OpenAI LLM to generate summary
-        response = get_llm().invoke([HumanMessage(content=llm_prompt)])
+        # Use non-JSON LLM to generate summary
+        response = get_text_llm().invoke([HumanMessage(content=llm_prompt)])
         state["package_summary"] = response.content
+        state["summary"] = response.content
         
         print("Generated package summary:", response.content)
         
@@ -42,6 +45,7 @@ def summarize_packages(state: TravelSearchState) -> TravelSearchState:
         # Fallback summary if LLM fails
         fallback_summary = create_fallback_summary(travel_packages)
         state["package_summary"] = fallback_summary
+        state["summary"] = fallback_summary
 
     state["current_node"] = "summarize_packages_node"
     return state

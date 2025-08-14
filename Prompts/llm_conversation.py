@@ -70,7 +70,7 @@ def build_input_extraction_prompt(state: TravelSearchState):
         - If and only if departure_date, origin, and destination are all present → set info_complete=true and needs_followup=false and followup_question=null.
         - Otherwise → set info_complete=false and needs_followup=true and set followup_question to a single, direct missing question (e.g., "Which city are you flying from?").
         - Update as many fields as the user provides in the latest message.
-        - Output ONLY valid JSON.
+        - Output ONLY valid json.
 
         EXAMPLES:
         - User: "I want to fly to Paris on august 20th" → {{"departure_date": "2025-08-20", "destination": "Paris", "followup_question": "Which city are you flying from?", "needs_followup": true, "info_complete": false}}

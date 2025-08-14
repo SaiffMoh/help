@@ -64,6 +64,8 @@ class TravelSearchState(TypedDict, total=False):
     body: Optional[Dict[str, Any]]
     access_token: Optional[str]
     package_summary: Optional[str]
+    summary: Optional[str]
+    travel_packages_html: Optional[List[str]]
     destination_location_code: Optional[str]
     selected_offer: Optional[Dict[str, Any]]
     package_results: Optional[Any]

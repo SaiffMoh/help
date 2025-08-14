@@ -2,7 +2,7 @@ import json
 import os
 from Models.TravelSearchState import TravelSearchState
 from langchain.schema import HumanMessage
-from Utils.getLLM import get_llm
+from Utils.getLLM import get_llm_json
 from Prompts.llm_conversation import build_input_extraction_prompt
 
 def llm_conversation_node(state: TravelSearchState) -> TravelSearchState:
@@ -16,7 +16,7 @@ def llm_conversation_node(state: TravelSearchState) -> TravelSearchState:
             return state
 
         llm_prompt = build_input_extraction_prompt(state)
-        response = get_llm().invoke([HumanMessage(content=llm_prompt)])
+        response = get_llm_json().invoke([HumanMessage(content=llm_prompt)])
 
         try:
             llm_result = json.loads(response.content)
