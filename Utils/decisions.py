@@ -25,11 +25,3 @@ def check_info_complete(state: TravelSearchState) -> str:
 
     return "ask_followup"
 
-
-def check_selection_complete(state: TravelSearchState) -> str:
-    """
-    If after selecting a flight we have enough info for hotel search, continue.
-    """
-    if state.get("city_code") and state.get("checkin_date") and state.get("checkout_date"):
-        return "continue_hotel_search"
-    return "ask_followup"

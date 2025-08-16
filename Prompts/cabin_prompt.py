@@ -6,7 +6,7 @@ def get_cabin_type_prompt(cabin: str):
     - ECONOMY
     - PREMIUM_ECONOMY
     - BUSINESS
-    - FIRST
+    - FIRST_CLASS
 
     If the cabin type is unclear or misspelled, guess the most likely match.
     Return ONLY one of the above cabin types exactly as written, with no extra words.
